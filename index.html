@@ -29,7 +29,7 @@
     .icon { font-size: 44px; margin-bottom: 8px; }
     h2 { font-size: 22px; margin-bottom: 12px; font-weight: 700; }
     
-    /* iOS 專用引導樣式 */
+    /* iOS FB 專用引導樣式 */
     .ios-box {
       background: #fff1f2;
       border: 2px dashed #f43f5e;
@@ -72,14 +72,15 @@
       right: 20px;
       font-size: 28px;
       animation: bounce 1.2s infinite;
+      z-index: 999;
     }
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
 
-    /* Android 按鈕 */
-    .android-btn {
+    /* 正式預約按鈕（進入 Safari / Chrome 後顯示） */
+    .open-btn {
       display: none;
       background: #2563eb;
       color: #ffffff;
@@ -89,21 +90,23 @@
       font-size: 17px;
       font-weight: 600;
       box-shadow: 0 4px 14px rgba(37,99,235,0.3);
-      margin-top: 15px;
+      margin-top: 20px;
     }
+    .open-btn:active { background: #1d4ed8; }
+    .status-text { color: #64748b; font-size: 15px; margin-top: 8px; }
   </style>
 </head>
 <body>
 
-  <!-- 螢幕右上角指示手指 -->
+  <!-- 螢幕右上角指示手指（僅在 FB 內開啟時顯示） -->
   <div id="top-hand" class="top-pointer" style="display: none;">👉 <span style="font-size: 14px; font-weight: bold; color: #e11d48; background: white; padding: 4px 8px; border-radius: 6px; border: 1px solid #fda4af;">點這裡</span></div>
 
   <div class="card">
     <div class="icon">🏕️</div>
     <h2>粗坑露營區 線上預約</h2>
 
-    <!-- iOS Facebook 訪客顯示此區塊 -->
-    <div id="ios-block" class="ios-box" style="display: none;">
+    <!-- 情況 A：Facebook / Instagram 內嵌瀏覽器中，顯示操作指引 -->
+    <div id="in-app-block" class="ios-box" style="display: none;">
       <h3>📌 開啟預約系統步驟</h3>
       <div class="step-item">
         <span class="badge">步驟 1</span> 請看螢幕<strong>右上角</strong>或<strong>右下角</strong>的圖示 <span class="highlight">「⋯」</span>
@@ -111,34 +114,44 @@
       <div class="step-item">
         <span class="badge">步驟 2</span> 點選選單中的 <span class="highlight">「在 Safari 中開啟」</span>
       </div>
-      <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;">（因 Facebook 瀏覽器相容性限制，請跳出至 Safari 即可順暢填寫）</p>
+      <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;">（因 Facebook 瀏覽器安全限制，需切換至 Safari 即可順暢填寫）</p>
     </div>
 
-    <!-- Android 訪客顯示按鈕（自動呼叫 Chrome） -->
-    <a id="android-open-btn" class="android-btn" href="#">前往預約系統</a>
+    <!-- 情況 B：已在 Safari / Chrome 中，自動跳轉並提供直通按鈕 -->
+    <div id="browser-block" style="display: none;">
+      <p class="status-text">正在為您開啟預約系統...</p>
+      <a id="direct-btn" class="open-btn" href="#">點此進入預約系統</a>
+    </div>
   </div>
 
   <script>
     const gasUrl = "https://script.google.com/macros/s/AKfycbxFKXeLKJblEKUl55FvOAU87BHMDviImgrta6LroZs9hnn27mnfZJQkFzsRurAXDYdD/exec";
     const ua = navigator.userAgent || navigator.vendor || window.opera;
-    const isFB = /FBAN|FBAV/i.test(ua);
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+    // 精準判斷是否在 Facebook、Instagram、Messenger 內嵌瀏覽器中
+    const isInAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(ua);
     const isAndroid = /Android/i.test(ua);
 
-    if (isAndroid) {
-      // Android 支援以 Intent 自動喚醒 Chrome
-      const cleanUrl = gasUrl.replace(/^https?:\/\//, '');
-      const chromeIntent = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
-      const btn = document.getElementById("android-open-btn");
-      btn.style.display = "block";
-      btn.href = chromeIntent;
-      window.location.href = chromeIntent;
-    } else {
-      // iOS 或其他瀏覽器：強制顯示右上角點「⋯」指引，不提供可能導致全白的站內連結
-      document.getElementById("ios-block").style.display = "block";
-      if (isFB) {
+    if (isInAppBrowser) {
+      if (isAndroid) {
+        // Android FB：可透過 Chrome Intent 直接自動強制喚醒 Chrome
+        const cleanUrl = gasUrl.replace(/^https?:\/\//, '');
+        const chromeIntent = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+        window.location.href = chromeIntent;
+      } else {
+        // iPhone FB：顯示右上角/右下角點選「在 Safari 中開啟」的指引
+        document.getElementById("in-app-block").style.display = "block";
         document.getElementById("top-hand").style.display = "block";
       }
+    } else {
+      // 已經成功切換到 Safari 或 Chrome：自動跳轉至預約系統
+      document.getElementById("browser-block").style.display = "block";
+      const directBtn = document.getElementById("direct-btn");
+      directBtn.href = gasUrl;
+      directBtn.style.display = "block";
+
+      // 自動轉址
+      window.location.replace(gasUrl);
     }
   </script>
 
