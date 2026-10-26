@@ -114,7 +114,7 @@
       <div class="step-item">
         <span class="badge">步驟 2</span> 點選選單中的 <span class="highlight">「在 Safari 中開啟」</span>
       </div>
-      <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;">（因 Facebook 瀏覽器安全限制，需切換至 Safari 即可順暢填寫）</p>
+      <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;">（因 Facebook 瀏覽器安全限制，需切換至 外部瀏覽器 即可順暢填寫）</p>
     </div>
 
     <!-- 情況 B：已在 Safari / Chrome 中，自動跳轉並提供直通按鈕 -->
@@ -139,7 +139,7 @@
         const chromeIntent = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
         window.location.href = chromeIntent;
       } else {
-        // iPhone FB：顯示右上角/右下角點選「在 Safari 中開啟」的指引
+        // iPhone FB：顯示右上角/右下角點選「在 外部瀏覽器 中開啟」的指引
         document.getElementById("in-app-block").style.display = "block";
         document.getElementById("top-hand").style.display = "block";
       }
