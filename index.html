@@ -3,32 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>粗坑露營區 - 前往預約系統</title>
+  <title>粗坑露營區 - 線上預約</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f1f5f9;
+      background: #f8fafc;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      color: #1e293b;
     }
     .card {
       background: #ffffff;
-      padding: 36px 24px;
+      padding: 32px 20px;
       border-radius: 20px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.06);
       max-width: 420px;
       width: 100%;
       text-align: center;
+      position: relative;
     }
-    .icon { font-size: 48px; margin-bottom: 12px; }
-    h2 { font-size: 22px; color: #1e293b; margin-bottom: 8px; font-weight: 700; }
-    p { color: #64748b; font-size: 15px; margin-bottom: 24px; }
-    .btn {
-      display: block;
+    .icon { font-size: 44px; margin-bottom: 8px; }
+    h2 { font-size: 22px; margin-bottom: 12px; font-weight: 700; }
+    
+    /* iOS 專用引導樣式 */
+    .ios-box {
+      background: #fff1f2;
+      border: 2px dashed #f43f5e;
+      border-radius: 16px;
+      padding: 20px 16px;
+      margin-top: 15px;
+      text-align: left;
+    }
+    .ios-box h3 {
+      color: #e11d48;
+      font-size: 17px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-item {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    .badge {
+      background: #e11d48;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .highlight {
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    /* 手指引導指示 */
+    .top-pointer {
+      position: fixed;
+      top: 12px;
+      right: 20px;
+      font-size: 28px;
+      animation: bounce 1.2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Android 按鈕 */
+    .android-btn {
+      display: none;
       background: #2563eb;
       color: #ffffff;
       text-decoration: none;
@@ -37,81 +89,56 @@
       font-size: 17px;
       font-weight: 600;
       box-shadow: 0 4px 14px rgba(37,99,235,0.3);
-      transition: background 0.2s;
-    }
-    .btn:active { background: #1d4ed8; }
-    .tip-box {
-      margin-top: 24px;
-      padding: 16px;
-      background: #fef2f2;
-      border: 1px solid #fee2e2;
-      border-radius: 12px;
-      text-align: left;
-    }
-    .tip-title {
-      font-weight: 700;
-      color: #dc2626;
-      font-size: 15px;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .tip-desc {
-      color: #7f1d1d;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-    .step-highlight {
-      font-weight: 700;
-      color: #b91c1c;
-      background: #fee2e2;
-      padding: 2px 6px;
-      border-radius: 4px;
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
 
+  <!-- 螢幕右上角指示手指 -->
+  <div id="top-hand" class="top-pointer" style="display: none;">👉 <span style="font-size: 14px; font-weight: bold; color: #e11d48; background: white; padding: 4px 8px; border-radius: 6px; border: 1px solid #fda4af;">點這裡</span></div>
+
   <div class="card">
     <div class="icon">🏕️</div>
     <h2>粗坑露營區 線上預約</h2>
-    <p>正在為您開啟預約系統...</p>
 
-    <a id="target-link" class="btn" href="https://script.google.com/macros/s/AKfycbxFKXeLKJblEKUl55FvOAU87BHMDviImgrta6LroZs9hnn27mnfZJQkFzsRurAXDYdD/exec">
-      點此進入預約系統
-    </a>
-
-    <!-- iOS 專屬指引 -->
-    <div id="ios-prompt" class="tip-box" style="display: none;">
-      <div class="tip-title">
-        <span>⚠️</span> 點擊後若畫面空白卡住：
+    <!-- iOS Facebook 訪客顯示此區塊 -->
+    <div id="ios-block" class="ios-box" style="display: none;">
+      <h3>📌 開啟預約系統步驟</h3>
+      <div class="step-item">
+        <span class="badge">步驟 1</span> 請看螢幕<strong>右上角</strong>或<strong>右下角</strong>的圖示 <span class="highlight">「⋯」</span>
       </div>
-      <div class="tip-desc">
-        1. 請看螢幕右上角或右下角圖示 <span class="step-highlight">⋯</span><br>
-        2. 點選 <span class="step-highlight">在 Safari 中開啟</span> 即可正常預約！
+      <div class="step-item">
+        <span class="badge">步驟 2</span> 點選選單中的 <span class="highlight">「在 Safari 中開啟」</span>
       </div>
+      <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;">（因 Facebook 瀏覽器相容性限制，請跳出至 Safari 即可順暢填寫）</p>
     </div>
+
+    <!-- Android 訪客顯示按鈕（自動呼叫 Chrome） -->
+    <a id="android-open-btn" class="android-btn" href="#">前往預約系統</a>
   </div>
 
   <script>
-    const directUrl = "https://script.google.com/macros/s/AKfycbxFKXeLKJblEKUl55FvOAU87BHMDviImgrta6LroZs9hnn27mnfZJQkFzsRurAXDYdD/exec";
+    const gasUrl = "https://script.google.com/macros/s/AKfycbxFKXeLKJblEKUl55FvOAU87BHMDviImgrta6LroZs9hnn27mnfZJQkFzsRurAXDYdD/exec";
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isFB = /FBAN|FBAV/i.test(ua);
-    const isAndroid = /Android/i.test(ua);
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
 
     if (isAndroid) {
-      // Android FB: 呼叫 Chrome Intent 直接跳外部 Chrome 開啟
-      const noSchemeUrl = directUrl.replace(/^https?:\/\//, '');
-      const chromeIntent = `intent://${noSchemeUrl}#Intent;scheme=https;package=com.android.chrome;end`;
-      document.getElementById("target-link").href = chromeIntent;
-      
-      // 自動跳轉
+      // Android 支援以 Intent 自動喚醒 Chrome
+      const cleanUrl = gasUrl.replace(/^https?:\/\//, '');
+      const chromeIntent = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+      const btn = document.getElementById("android-open-btn");
+      btn.style.display = "block";
+      btn.href = chromeIntent;
       window.location.href = chromeIntent;
-    } else if (isIOS && isFB) {
-      // iOS FB: 展開操作指示
-      document.getElementById("ios-prompt").style.display = "block";
+    } else {
+      // iOS 或其他瀏覽器：強制顯示右上角點「⋯」指引，不提供可能導致全白的站內連結
+      document.getElementById("ios-block").style.display = "block";
+      if (isFB) {
+        document.getElementById("top-hand").style.display = "block";
+      }
     }
   </script>
 
